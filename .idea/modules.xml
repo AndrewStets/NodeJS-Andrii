@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NodeJS-Andrii.iml" filepath="$PROJECT_DIR$/NodeJS-Andrii.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/NodeJS-Andrii.iml" filepath="$PROJECT_DIR$/.idea/NodeJS-Andrii.iml" />
     </modules>
   </component>
 </project>

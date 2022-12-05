@@ -1,4 +1,4 @@
-.env-example
 .idea
+.env-example
 node_modules
 package-lock.json
