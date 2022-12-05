@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const mdlwr = require("../middleware/user.middleware");
-const { userController } = require("../controller");
+const userController = require("../controller/user.controller");
 
 router.get('/', userController.getAllUsers);
 router.post('/', mdlwr.isBodyValidCreate, userController.createUser);

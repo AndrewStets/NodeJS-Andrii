@@ -1,6 +1,6 @@
 const ApiError = require('../error/ApiError');
-const { userService } = require('../service');
-const { userNormalizator } = require('../helper');
+const userService = require('../service/user.service');
+const userNormalizator = require('../helper/user.normalizator');
 
 
 module.exports = {
