@@ -1,10 +1,10 @@
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
+let express = require('express');
+let mongoose = require('mongoose');
+require('dotenv').config()
 
-const userRouter = require('./router/user.router');
-const authRouter = require('./router/auth.router');
-const configs = require('./config/config');
+let userRouter = require('./router/user.router');
+let authRouter = require('./router/auth.router');
+let configs = require('./config/config');
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use('/auth', authRouter);
 app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
-    res.json('WELCOME')
+    res.json('WELOCME');
 });
 
 app.use((err, req, res, next) => {
