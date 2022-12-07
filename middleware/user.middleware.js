@@ -1,89 +1,88 @@
+const User = require('../dataBase/User');
 const ApiError = require('../error/ApiError');
-const userService = require('../service/user.service');
-const userNormalizator = require('../helper/user.normalizator');
+const userValidator = require('../validator/user.validator');
+const commonValidator = require('../validator/common.validators');
 
 
 module.exports = {
-    checkIsUserExist: async (req, res, next) => {
+    getUserDynamically: async (fieldName, from = 'body', dbField = fieldName) => {
         try {
-            const { userId } = req.params;
+            const fieldToSearch = req[from][fieldName];
 
-            const users = await userService.findOneByParams({ _id: userId});
-
-            const user = users.find((u) => u.id === +userId);
+            const user = await User.findOne({[dbField]: fieldToSearch});
 
             if (!user) {
-                throw new ApiError('User not found', 404);
+                throw new ApiError('Inna not found', 404);
             }
 
             req.user = user;
 
             next();
-        }catch (e) {
+        } catch (e) {
             next(e);
         }
     },
 
-    isBodyValidCreate: (req, res, next) => {
+    checkIsEmailUnique: async (req, res, next) => {
         try {
-            const { name, age, email } = req.body;
-            if (!name || name.length < 3 || typeof name !== 'string') {
-                throw new ApiError('Wrong name', 400);
+            const {email} = req.body;
+
+            if (!email) {
+                throw new ApiError('Email not pressent', 400);
             }
 
-            if (!age || age < 0 || Number.isNaN(+age)) {
-                throw new ApiError('Wrong age', 400);
-            }
-            
-            if (!email || !email.includes('@')) {
-                throw new ApiError('Wrong email', 400);
+            const user = await User.findOne({email});
+
+            if (!user) {
+                throw new ApiError('User with this email already exists', 409);
             }
 
             next();
-        }catch (e) {
-            next(e);
+        } catch (e) {
+            next(e)
         }
     },
 
-    isBodyValidUpdate: (req, res, next) => {
+    isNewUserValid: async (req, res, next) => {
         try {
-            const { name, age, email } = req.body;
-            if (name && (name.length < 3 || typeof name !== 'string')) {
-                throw new ApiError('Wrong name', 400);
+            const validate = userValidator.newUserValidator.validate(req.body);
+
+            if (!validate) {
+                throw new ApiError(validate.error.message, 400);
             }
-            if (age && (age < 0 || Number.isNaN(+age))) {
-                throw new ApiError('Wrong age', 400);
-            }
-            if (email && !email.includes('@')) {
-                throw new ApiError('Wrong email', 400);
-            }
+
+            req.body = validate.value;
 
             next();
-        }catch (e) {
+        } catch (e) {
             next(e);
         }
     },
 
-    userNormalizator: (req, res, next) => {
+    isEditUserValid: async (req, res, next) => {
         try {
-            let { name, email } = req.body;
-            
-            if (name) req.body.name = userNormalizator.name(name);
-            
-            if (email) req.body.email = email.toLowerCase();
+            let validate = userValidator.editUserValidator.validate(req.body);
+
+            if (!validate) {
+                throw new ApiError(validate.error.message);
+            }
+
+            req.body = validate.value;
 
             next();
-        }catch (e) {
+        } catch (e) {
             next(e);
         }
     },
 
-    isIdValid: (req, res, next) => {
+    isUserIdValid: (req, res, next) => {
         try {
-            const { userId } = req.params;
+            const { userId } = req.body;
 
-            if (userId < 0 || Number.isNaN(+userId)) {
-                throw new ApiError('Not valid ID', 400);
+            const validate = commonValidator.idValidator.validate(userId);
+
+            if (!userId) {
+                throw new ApiError(validate.error.message);
             }
 
             next();
@@ -91,4 +90,4 @@ module.exports = {
             next(e);
         }
     }
-}
+};

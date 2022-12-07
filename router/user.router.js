@@ -4,11 +4,37 @@ const controller = require("../controller/user.controller");
 const mdlwr = require("../middleware/user.middleware");
 const authMdlwr = require('../middleware/auth.middleware');
 
-router.get('/', controller.getAllUsers);
-router.post('/', mdlwr.isBodyValidCreate, controller.createUser);
+router.get(
+    '/',
+    controller.getAllUsers
+);
+router.post(
+    '/',
+    mdlwr.isNewUserValid,
+    mdlwr.checkIsEmailUnique,
+    controller.createUser
+);
 
-router.get('/userId', mdlwr.isIdValid, mdlwr.checkIsUserExist, controller.getUserById);
-router.put('/userId', mdlwr.isIdValid, mdlwr.isBodyValidUpdate, mdlwr.checkIsUserExist, mdlwr.userNormalizator, controller.updateUser);
-router.delete('/userId', mdlwr.isIdValid, mdlwr.checkIsUserExist, controller.deleteUserById);
+router.get(
+    '/userId',
+    mdlwr.isUserIdValid,
+    authMdlwr.checkAccessToken,
+    mdlwr.getUserDynamically('userId', 'params', '_id'),
+    controller.getUserById
+);
+router.put(
+    '/userId',
+    mdlwr.isUserIdValid,
+    mdlwr.isEditUserValid,
+    authMdlwr.checkAccessToken,
+    mdlwr.getUserDynamically('userId', 'params', '_id'),
+    controller.updateUser
+);
+router.delete(
+    '/userId',
+    mdlwr.isUserIdValid,
+    authMdlwr.checkAccessToken,
+    controller.deleteUserById
+);
 
 module.exports = router;

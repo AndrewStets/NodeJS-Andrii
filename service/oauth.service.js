@@ -16,7 +16,26 @@ module.exports = {
         }
     },
 
+    generateAccessTokenPair: (dataToSign = {}) => {
+        const accessToken = jwt.sign(dataToSign, ACCESS_SECRET, {expiresIn: '15s'});
+        const refreshToken = jwt.sign(dataToSign, REFRESH_SECRET, {expiresIn: '30d'});
 
+        return{
+            accessToken,
+            refreshToken
+        }
+    },
 
+    checkToken: (token = '', tokenType = tokenTypeEnum.accessToken) => {
+        try {
+            let secret = '';
 
+            if (tokenType === tokenTypeEnum.accessToken) secret = ACCESS_SECRET;
+            else if (tokenType === tokenTypeEnum.refreshToken) secret = REFRESH_SECRET;
+
+            return jwt.verify(token, secret);
+        }catch (e) {
+            throw new ApiError('Token not valid', 401);
+        }
+    },
 };
